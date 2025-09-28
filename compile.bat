@@ -1,0 +1,2 @@
+esphome compile controlpanel.yaml
+pause

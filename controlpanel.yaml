@@ -1,0 +1,391 @@
+substitutions:
+  hostname: controlpanel
+  friendly_name: ControlPanel
+
+esphome:
+  name: $hostname
+  friendly_name: $friendly_name
+
+esp32:
+  board: jczn_2432s028r
+  framework:
+    #type: esp-idf
+    type: arduino
+
+# Enable logging
+logger:
+  logs:
+    component: ERROR
+    
+# Enable Home Assistant API
+api:
+  password: ""
+
+ota:
+  - platform: esphome
+    password: ""
+
+wifi:
+  networks:
+  - ssid: !secret wifi_virus_ssid
+    password: !secret wifi_virus_pw
+  - ssid: !secret wifi_dombai_ssid
+    password: !secret wifi_dombai_pw
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Controlpanel Fallback Hotspot"
+    password: "DkvezAuyngTX"
+
+captive_portal:
+    
+###################################################################################################
+# =================================================================================================
+# Hardware related setup
+i2c:
+  - sda: 27
+    scl: 22
+    scan: true
+
+spi:
+  - id: tft
+    clk_pin: 14
+    mosi_pin: 13
+    miso_pin:
+      number: 12
+      ignore_strapping_warning: true
+  - id: touch
+    clk_pin: 25
+    mosi_pin: 32
+    miso_pin: 39
+
+###################################################################################################
+# === Sensors =====================================================================================
+#sensor:
+#  - platform: homeassistant
+#    id: idHaNappaliTmp
+#    entity_id: sensor.nappalisens_nappali_h_m_rs_klet
+#    internal: true    
+#    on_value:
+#      - lvgl.indicator.update:
+#          id: temperature_needle
+#          value: !lambda return x * 10;
+#      - lvgl.label.update:
+#          id: temperature_text
+#          text:
+#            format: "%.1f°C"
+#            args: [ 'x' ]
+
+
+
+# font:
+#  - file: "gfonts://Roboto"
+#    id: idRoboto10
+#    size: 10
+#    bpp: 4
+
+
+
+# === LVGL ========================================================================================
+lvgl:
+  top_layer:
+    widgets:
+      - buttonmatrix:
+          align: bottom_mid
+          styles: header_footer
+          pad_all: 0
+          outline_width: 0
+          id: top_layer
+          items:
+            styles: header_footer
+          rows:
+            - buttons:
+              - id: page_prev
+                text: "\uF053"
+                on_press:
+                  then:
+                    lvgl.page.previous:
+              - id: page_home
+                text: "\uF015"
+                on_press:
+                  then:
+                    lvgl.page.show: idPageLentRdny
+              - id: page_next
+                text: "\uF054"
+                on_press:
+                  then:
+                    lvgl.page.next:
+
+  pages:
+        - id: idPageLentRdny
+          widgets:
+          #--- Konyha redőny ---
+            - label:
+                x: 5
+                y: 6
+                width: 70
+                text: "Konyha"
+                text_align: CENTER
+            - button:
+                x: 5
+                y: 30
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyKFel
+                      align: CENTER
+                      text: "\uF077"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_konyha_red_ny_fel
+            - button:
+                x: 5
+                y: 103
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyKStop
+                      align: CENTER
+                      text: STOP
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_konyha_red_ny_stop
+            - button:
+                x: 5
+                y: 178
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyKLe
+                      align: CENTER
+                      text: "\uF078"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_konyha_red_ny_le
+          #--- Nap1 redőny ---
+            - label:
+                x: 85
+                y: 6
+                width: 70
+                text: "Napp.1"
+                text_align: CENTER
+            - button:
+                x: 85
+                y: 30
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyNap1Fel
+                      align: CENTER
+                      text: "\uF077"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_1_red_ny_fel
+            - button:
+                x: 85
+                y: 103
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: cov_stoidBRdnyNap1Stop
+                      align: CENTER
+                      text: STOP
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_1_red_ny_stop
+            - button:
+                x: 85
+                y: 178
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyNap1Le
+                      align: CENTER
+                      text: "\uF078"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_1_red_ny_le
+
+          #--- Nap2 redőny ---
+            - label:
+                x: 165
+                y: 6
+                width: 70
+                text: "Napp.2"
+                text_align: CENTER
+            - button:
+                x: 165
+                y: 30
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyNap2Fel
+                      align: CENTER
+                      text: "\uF077"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_2_red_ny_fel
+            - button:
+                x: 165
+                y: 103
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: cov_stoidBRdnyNap2Stop
+                      align: CENTER
+                      text: STOP
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_2_red_ny_stop
+            - button:
+                x: 165
+                y: 178
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyNap2Le
+                      align: CENTER
+                      text: "\uF078"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_2_red_ny_le
+
+
+
+
+  style_definitions:
+    - id: header_footer
+      bg_color: 0x2F8CD8
+      bg_grad_color: 0x005782
+      bg_grad_dir: VER
+      bg_opa: COVER
+      border_opa: TRANSP
+      radius: 0
+      pad_all: 0
+      pad_row: 0
+      pad_column: 0
+      border_color: 0x0077b3
+      text_color: 0xFFFFFF
+      width: 100%
+      height: 30
+
+
+# =================================================================================================
+# === Lights =====================================================================================
+output:
+  - id: backlight_pwm
+    platform: ledc
+    pin: 21
+  - id: output_red
+    platform: ledc
+    pin: 4
+    inverted: true
+  - id: output_green
+    platform: ledc
+    pin: 16
+    inverted: true
+  - id: output_blue
+    platform: ledc
+    pin: 17
+    inverted: true
+
+light:
+  - id: backlight
+    platform: monochromatic
+    output: backlight_pwm
+    name: Display Backlight
+    restore_mode: ALWAYS_ON
+  - id: led
+    platform: rgb
+    red: output_red
+    green: output_green
+    blue: output_blue
+    restore_mode: ALWAYS_OFF                    
+                    
+# =================================================================================================
+# === Display =====================================================================================
+# Setup the ili9xxx platform
+display:
+  - id: idDisplay
+    platform: ili9xxx
+    model:  TFT 2.4R    # original used to be LI9341
+    #model: st7789v
+    spi_id: tft
+    cs_pin:
+      number: 15
+      ignore_strapping_warning: true
+    dc_pin:
+      number:  2
+      ignore_strapping_warning: true
+    invert_colors: true   # original used to be false
+    color_palette: 8BIT   # added this line
+    update_interval: never
+    auto_clear_enabled: false
+    transform:            # added this line
+      swap_xy: true
+      mirror_x: false
+    dimensions:           #added this line
+      height: 320
+      width: 240
+touchscreen:
+  - id: main_touchscreen
+    platform: xpt2046
+    spi_id: touch
+    cs_pin: 33
+    interrupt_pin: 36
+    threshold: 400
+    calibration:
+      x_min: 280
+      x_max: 3860
+      y_min: 340
+      y_max: 3860
+    transform:        
+      mirror_x: false  # original used to be true
+      mirror_y: true  #added this line
+      swap_xy: false  #added this line
+    #on_touch:
+    #  - lambda: |-
+    #        ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
+    #          touch.x,
+    #          touch.y,
+    #          touch.x_raw,
+    #          touch.y_raw
+    #        );                    
+                    
+

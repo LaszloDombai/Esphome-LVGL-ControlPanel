@@ -1,0 +1,56 @@
+          #--- Kapu ---
+            - label:
+                x: 5
+                y: 36
+                width: 70
+                text: "Kapu"
+                text_align: CENTER
+            - button:
+                x: 5
+                y: 60
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBKapuStart
+                      align: CENTER
+                      text: "Start"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_kapu_start
+            - button:
+                x: 5
+                y: 133
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBKapuStop
+                      align: CENTER
+                      text: STOP
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_kapu_stop
+            - button:
+                x: 5
+                y: 208
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBKapuSzemelyi
+                      align: CENTER
+                      text: "Szemelyi"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_kapu_szem_lyi
+          

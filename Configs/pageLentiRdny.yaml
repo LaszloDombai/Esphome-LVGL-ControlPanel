@@ -1,0 +1,166 @@
+          #--- Konyha redőny ---
+            - label:
+                x: 5
+                y: 36
+                width: 70
+                text: "Konyha"
+                text_align: CENTER
+            - button:
+                x: 5
+                y: 60
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyKFel
+                      align: CENTER
+                      text: "\uF077"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_konyha_red_ny_fel
+            - button:
+                x: 5
+                y: 133
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyKStop
+                      align: CENTER
+                      text: STOP
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_konyha_red_ny_stop
+            - button:
+                x: 5
+                y: 208
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyKLe
+                      align: CENTER
+                      text: "\uF078"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_konyha_red_ny_le
+          #--- Nap1 redőny ---
+            - label:
+                x: 85
+                y: 36
+                width: 70
+                text: "Napp.1"
+                text_align: CENTER
+            - button:
+                x: 85
+                y: 60
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyNap1Fel
+                      align: CENTER
+                      text: "\uF077"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_1_red_ny_fel
+            - button:
+                x: 85
+                y: 133
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: cov_stoidBRdnyNap1Stop
+                      align: CENTER
+                      text: STOP
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_1_red_ny_stop
+            - button:
+                x: 85
+                y: 208
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyNap1Le
+                      align: CENTER
+                      text: "\uF078"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_1_red_ny_le
+
+          #--- Nap2 redőny ---
+            - label:
+                x: 165
+                y: 36
+                width: 70
+                text: "Napp.2"
+                text_align: CENTER
+            - button:
+                x: 165
+                y: 60
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyNap2Fel
+                      align: CENTER
+                      text: "\uF077"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_2_red_ny_fel
+            - button:
+                x: 165
+                y: 133
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: cov_stoidBRdnyNap2Stop
+                      align: CENTER
+                      text: STOP
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_2_red_ny_stop
+            - button:
+                x: 165
+                y: 208
+                width: 70
+                height: 68
+                widgets:
+                  - label:
+                      id: idBRdnyNap2Le
+                      align: CENTER
+                      text: "\uF078"
+                on_press:
+                  then:
+                    - homeassistant.action:
+                        action: button.press
+                        data:
+                          entity_id: button.ookcontrol_nappali_2_red_ny_le

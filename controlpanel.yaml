@@ -33,7 +33,6 @@ api:
         then:
           - lvgl.widget.hide: idLblConnSts
 
-
 ota:
   - platform: esphome
     password: ""
@@ -73,7 +72,42 @@ spi:
     miso_pin: 39
 
 ###################################################################################################
+# === Fonts ======================================================================================
+font:
+  - file: "custom/materialdesignicons-webfont.ttf"
+    id: mdi_42
+    size: 42
+    bpp: 4
+    glyphs: [
+      "\U000F0335", # mdi-lightbulb
+      "\U000F0336", # mdi-lightbulb-outline
+      ]
+
 # === Sensors =====================================================================================
+text_sensor:
+  - platform: homeassistant
+    id: idGarazsKapuState
+    entity_id: binary_sensor.garagecontrol_garazsajto
+    on_value:
+      then:
+        # - lvgl.widget.update:
+        #     id: idBGarazsKapuLabel
+        #     state:
+        #       checked: !lambda return (0 == x.compare(std::string{"on"}));
+        #       disabled: !lambda return ((0 == x.compare(std::string{"unavailable"})) or (0 == x.compare(std::string{"unknown"})));
+        - lvgl.label.update:
+            id: idBGarazsKapuLabel
+            text: !lambda |-
+              static char buf[10];
+              std::string icon;
+              if (0 == x.compare(std::string{"on"})) {
+                  icon = "Nyitva\U000F0335";
+              } else {
+                  icon = "Zarva\U000F0336";
+              }
+              snprintf(buf, sizeof(buf), "%s", icon.c_str());
+              return buf;
+
 #sensor:
 #  - platform: homeassistant
 #    id: idHaNappaliTmp
@@ -97,24 +131,24 @@ spi:
 
 # === LVGL ========================================================================================
 lvgl:
-  top_layer:    
+  top_layer:
     widgets:
       #---[ footer ]-------------------------------------------------------------------------------
       - buttonmatrix:
           align: bottom_mid
-          styles: header_footer
+          styles: footer
           pad_all: 0
           outline_width: 0
           id: top_layer
           items:
-            styles: header_footer
+            styles: footer
           rows:
             - buttons:
                 - id: page_prev
                   text: "\uF053"
                   on_press:
                     then:
-                      lvgl.page.previous: 
+                      lvgl.page.previous:
                 - id: page_home
                   text: "\uF015"
                   on_press:
@@ -124,12 +158,12 @@ lvgl:
                   text: "\uF054"
                   on_press:
                     then:
-                      lvgl.page.next: 
+                      lvgl.page.next:
       #---[ Connection status ]--------------------------------------------------------------------
       - label:
-          text: "\uF1EB"
+          text: "Csatlakozva...  \uF1EB"
           id: idLblConnSts
-          styles: header_footer
+          styles: header
           hidden: true
           align: top_right
           x: -2
@@ -139,18 +173,11 @@ lvgl:
 
   pages:
     - id: idPageLentRdny
-      widgets:
-        !include Configs/pageLentiRdny.yaml
+      widgets: !include Configs/pageLentiRdny.yaml
     - id: idPageKapuGrzs
-      widgets:
-        !include Configs/pageKapuGrzs.yaml
- 
+      widgets: !include Configs/pageKapuGrzs.yaml
 
-  style_definitions:
-    !include Configs/styleDefinitions.yaml
-
-
-
+  style_definitions: !include Configs/styleDefinitions.yaml
 
 # =================================================================================================
 # === Lights =====================================================================================

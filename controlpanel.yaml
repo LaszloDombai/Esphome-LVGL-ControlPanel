@@ -52,6 +52,21 @@ wifi:
 captive_portal:
 
 ###################################################################################################
+# ===[ Globals ]===================================================================================
+number:
+  - platform: template
+    name: LVGL Screen timeout
+    optimistic: true
+    id: idDisplayTimeout
+    unit_of_measurement: "s"
+    initial_value: 45
+    restore_value: true
+    min_value: 10
+    max_value: 180
+    step: 5
+    mode: box
+
+###################################################################################################
 # =================================================================================================
 # Hardware related setup
 i2c:
@@ -73,15 +88,15 @@ spi:
 
 ###################################################################################################
 # === Fonts ======================================================================================
-font:
-  - file: "custom/materialdesignicons-webfont.ttf"
-    id: mdi_42
-    size: 42
-    bpp: 4
-    glyphs: [
-      "\U000F0335", # mdi-lightbulb
-      "\U000F0336", # mdi-lightbulb-outline
-      ]
+# font:
+#   - file: "custom/materialdesignicons-webfont.ttf"
+#     id: mdi_42
+#     size: 42
+#     bpp: 4
+#     glyphs: [
+#       "\U000F0335", # mdi-lightbulb
+#       "\U000F0336", # mdi-lightbulb-outline
+#       ]
 
 # === Sensors =====================================================================================
 text_sensor:
@@ -101,9 +116,9 @@ text_sensor:
               static char buf[10];
               std::string icon;
               if (0 == x.compare(std::string{"on"})) {
-                  icon = "Nyitva\U000F0335";
+                  icon = "Nyitva";
               } else {
-                  icon = "Zarva\U000F0336";
+                  icon = "Zarva";
               }
               snprintf(buf, sizeof(buf), "%s", icon.c_str());
               return buf;
@@ -153,7 +168,7 @@ lvgl:
                   text: "\uF015"
                   on_press:
                     then:
-                      lvgl.page.show: idPageLentRdny
+                      lvgl.page.show: idPageKapuGrzs
                 - id: page_next
                   text: "\uF054"
                   on_press:
@@ -172,19 +187,30 @@ lvgl:
           text_color: 0xFFFFFF
 
   pages:
-    - id: idPageLentRdny
-      widgets: !include Configs/pageLentiRdny.yaml
     - id: idPageKapuGrzs
       widgets: !include Configs/pageKapuGrzs.yaml
+    - id: idPageLentRdny
+      widgets: !include Configs/pageLentiRdny.yaml
 
   style_definitions: !include Configs/styleDefinitions.yaml
+
+  on_idle:
+    timeout: !lambda "return (id(idDisplayTimeout).state * 1000);"
+    then:
+      - logger.log: "LVGL is idle"
+      - light.turn_on:
+          id: idBacklight
+          brightness: 30%
+          transition_length: 500ms
+      - lvgl.pause:
 
 # =================================================================================================
 # === Lights =====================================================================================
 output:
-  - id: backlight_pwm
+  - id: idBacklightPwmPin
     platform: ledc
     pin: 21
+    frequency: 1000 Hz
   - id: output_red
     platform: ledc
     pin: 4
@@ -199,12 +225,12 @@ output:
     inverted: true
 
 light:
-  - id: backlight
+  - id: idBacklight
     platform: monochromatic
-    output: backlight_pwm
+    output: idBacklightPwmPin
     name: Display Backlight
     restore_mode: ALWAYS_ON
-  - id: led
+  - id: idLed
     platform: rgb
     red: output_red
     green: output_green
@@ -236,6 +262,7 @@ display:
     dimensions: #added this line
       height: 320
       width: 240
+# ===[  Touchscreen ]==============================================================================
 touchscreen:
   - id: main_touchscreen
     platform: xpt2046
@@ -252,11 +279,24 @@ touchscreen:
       mirror_x: false # original used to be true
       mirror_y: true #added this line
       swap_xy: false #added this line
-    #on_touch:
-    #  - lambda: |-
-    #        ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
-    #          touch.x,
-    #          touch.y,
-    #          touch.x_raw,
-    #          touch.y_raw
-    #        );
+    on_release:
+      - if:
+          condition: lvgl.is_paused
+          then:
+            - logger.log: "LVGL resuming"
+            - lvgl.resume:
+            - lvgl.widget.redraw:
+            - light.turn_on:
+                id: idBacklight
+                brightness: 100%
+                transition_length: 500ms
+
+  # Uncomment to enable touch logging
+  #on_touch:
+  #  - lambda: |-
+  #        ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
+  #          touch.x,
+  #          touch.y,
+  #          touch.x_raw,
+  #          touch.y_raw
+  #        );

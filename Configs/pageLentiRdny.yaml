@@ -10,7 +10,8 @@
     x: 5
     y: 50
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: idBRdnyKFel
@@ -24,9 +25,10 @@
               entity_id: button.ookcontrol_konyha_red_ny_fel
 - button:
     x: 5
-    y: 123
+    y: 115
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: idBRdnyKStop
@@ -40,9 +42,10 @@
               entity_id: button.ookcontrol_konyha_red_ny_stop
 - button:
     x: 5
-    y: 198
+    y: 180
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: idBRdnyKLe
@@ -65,7 +68,8 @@
     x: 85
     y: 50
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: idBRdnyNap1Fel
@@ -79,9 +83,10 @@
               entity_id: button.ookcontrol_nappali_1_red_ny_fel
 - button:
     x: 85
-    y: 123
+    y: 115
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: cov_stoidBRdnyNap1Stop
@@ -95,9 +100,10 @@
               entity_id: button.ookcontrol_nappali_1_red_ny_stop
 - button:
     x: 85
-    y: 198
+    y: 180
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: idBRdnyNap1Le
@@ -121,7 +127,8 @@
     x: 165
     y: 50
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: idBRdnyNap2Fel
@@ -135,9 +142,10 @@
               entity_id: button.ookcontrol_nappali_2_red_ny_fel
 - button:
     x: 165
-    y: 123
+    y: 115
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: cov_stoidBRdnyNap2Stop
@@ -151,9 +159,10 @@
               entity_id: button.ookcontrol_nappali_2_red_ny_stop
 - button:
     x: 165
-    y: 198
+    y: 180
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: idBRdnyNap2Le

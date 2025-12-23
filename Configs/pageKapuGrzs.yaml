@@ -5,12 +5,14 @@
     y: 26
     width: 70
     text: "Kapu"
+    styles: idStylePageBack
     text_align: CENTER
 - button:
     x: 5
     y: 50
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons    
     widgets:
       - label:
           id: idBKapuStart
@@ -24,9 +26,10 @@
               entity_id: button.ookcontrol_kapu_start
 - button:
     x: 5
-    y: 123
+    y: 115
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons    
     widgets:
       - label:
           id: idBKapuStop
@@ -40,9 +43,10 @@
               entity_id: button.ookcontrol_kapu_stop
 - button:
     x: 5
-    y: 198
+    y: 180
     width: 70
-    height: 68
+    height: 55
+    styles: idStyleButtons    
     widgets:
       - label:
           id: idBKapuSzemelyi
@@ -58,15 +62,17 @@
 #---[ Garázs ]---
 - label:
     x: 90
-    y: 105
+    y: 89
     width: 140
     text: "Garazskapu"
     text_align: CENTER
+    styles: idStylePageBack    
 - button:
     x: 90
-    y: 123
+    y: 115
     width: 140
-    height: 68
+    height: 55
+    styles: idStyleButtons
     widgets:
       - label:
           id: idBGarazsKapuLabel

@@ -5,6 +5,8 @@ substitutions:
 esphome:
   name: $hostname
   friendly_name: $friendly_name
+  # platformio_options:
+  #   build_flags: "-DLV_COLOR_16_SWAP=1"
 
 esp32:
   board: jczn_2432s028r
@@ -65,6 +67,39 @@ number:
     max_value: 180
     step: 5
     mode: box
+
+# =================================================================================================
+# --- Global variables ----------------------------------------------------------------------------
+globals:
+  # --- time counter --------------------------------------------------------------------------------
+  - id: idGlbTCntr
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: idLvglIdleFlag
+    type: int
+    restore_value: no
+    initial_value: "0"
+
+
+# =================================================================================================
+# --- Interval ------------------------------------------------------------------------------------
+interval:
+  # --- 5 sec periodic timer ----------------------------------------------------------------------
+  - interval: 1s
+    then:
+      - lambda: |-          
+          if (id(idLvglIdleFlag)) {
+             id(idGlbTCntr)++;
+
+             if (5U == id(idGlbTCntr)) {
+               lvgl_lvglcomponent_id->show_page(idPagePic1->index, LV_SCR_LOAD_ANIM_NONE, 150);         
+             } 
+             else if (10U == id(idGlbTCntr)) {
+               lvgl_lvglcomponent_id->show_page(idPagePic2->index, LV_SCR_LOAD_ANIM_NONE, 150);         
+               id(idGlbTCntr) = 0U;
+             }
+          }
 
 ###################################################################################################
 # =================================================================================================
@@ -144,68 +179,8 @@ text_sensor:
 #    size: 10
 #    bpp: 4
 
-# === LVGL ========================================================================================
-lvgl:
-  top_layer:
-    widgets:
-      #---[ footer ]-------------------------------------------------------------------------------
-      - buttonmatrix:
-          align: bottom_mid
-          styles: footer
-          pad_all: 0
-          outline_width: 0
-          id: top_layer
-          items:
-            styles: footer
-          rows:
-            - buttons:
-                - id: page_prev
-                  text: "\uF053"
-                  on_press:
-                    then:
-                      lvgl.page.previous:
-                - id: page_home
-                  text: "\uF015"
-                  on_press:
-                    then:
-                      lvgl.page.show: idPageKapuGrzs
-                - id: page_next
-                  text: "\uF054"
-                  on_press:
-                    then:
-                      lvgl.page.next:
-      #---[ Connection status ]--------------------------------------------------------------------
-      - label:
-          text: "Csatlakozva...  \uF1EB"
-          id: idLblConnSts
-          styles: header
-          hidden: true
-          align: top_right
-          x: -2
-          y: 7
-          text_align: right
-          text_color: 0xFFFFFF
-
-  pages:
-    - id: idPageKapuGrzs
-      widgets: !include Configs/pageKapuGrzs.yaml
-    - id: idPageLentRdny
-      widgets: !include Configs/pageLentiRdny.yaml
-
-  style_definitions: !include Configs/styleDefinitions.yaml
-
-  on_idle:
-    timeout: !lambda "return (id(idDisplayTimeout).state * 1000);"
-    then:
-      - logger.log: "LVGL is idle"
-      - light.turn_on:
-          id: idBacklight
-          brightness: 30%
-          transition_length: 500ms
-      - lvgl.pause:
-
 # =================================================================================================
-# === Lights =====================================================================================
+# === Outputs =====================================================================================
 output:
   - id: idBacklightPwmPin
     platform: ledc
@@ -237,6 +212,120 @@ light:
     blue: output_blue
     restore_mode: ALWAYS_OFF
 
+# === Images ======================================================================================
+image:
+  - file: "Pic\\tipli_1.jpg"
+    id: idPic1
+    type: RGB565
+    # transparency: opaque
+    # dither: NONE
+    # invert_alpha: false
+    resize: 240x320
+  - file: "Pic\\pic_2.jpg"
+    id: idPic2
+    type: RGB565
+    # transparency: opaque
+    # dither: NONE
+    # invert_alpha: false
+    resize: 240x320
+# === LVGL ========================================================================================
+lvgl:
+  top_layer:
+    widgets:
+      #---[ footer ]-------------------------------------------------------------------------------
+      - buttonmatrix:
+          align: bottom_mid
+          styles: idStyleFooter
+          pad_all: 0
+          outline_width: 0
+          id: idTopLayer
+          items:
+            styles: idStyleFooter
+          rows:
+            - buttons:
+                - id: page_prev
+                  text: "\uF053"
+                  on_press:
+                    then:
+                      - if:
+                          condition:
+                            - lambda: 'return (lvgl_lvglcomponent_id->get_current_page() == 0);'
+                          then:
+                            - lambda: 'lvgl_lvglcomponent_id->show_page(idPageLentRdny->index, LV_SCR_LOAD_ANIM_NONE, 500);'
+                          else:
+                            lvgl.page.previous:                          
+                - id: page_home
+                  text: "\uF015"
+                  on_press:
+                    then:
+                      lvgl.page.show: idPageKapuGrzs
+                - id: page_next
+                  text: "\uF054"
+                  on_press:
+                    then:
+                      - if:
+                          condition:
+                            - lambda: 'return (lvgl_lvglcomponent_id->get_current_page() == 1);'
+                          then:
+                            - lambda: 'lvgl_lvglcomponent_id->show_page(idPageKapuGrzs->index, LV_SCR_LOAD_ANIM_NONE, 500);'
+                          else:
+                            lvgl.page.next:                          
+                      
+      #---[ Connection status ]--------------------------------------------------------------------
+      - label:
+          text: "Csatlakozva...  \uF1EB"
+          id: idLblConnSts
+          styles: header
+          hidden: true
+          align: top_right
+          x: -2
+          y: 7
+          text_align: right
+          text_color: 0xFFFFFF
+  #---[ Pages ]-----------------------------------------------------------------------------------
+  pages:
+    - id: idPageKapuGrzs
+      styles: idStylePageBack
+      widgets: !include Configs/pageKapuGrzs.yaml
+    - id: idPageLentRdny
+      styles: idStylePageBack
+      widgets: !include Configs/pageLentiRdny.yaml    
+    - id: idPagePic1
+      styles: idStylePageBack
+      widgets:
+        - image:
+            src: idPic1
+            # x: 0
+            # y: 0
+            align: CENTER
+    - id: idPagePic2
+      styles: idStylePageBack
+      widgets:
+        - image:
+            src: idPic2
+            # x: 0
+            # y: 0
+            align: CENTER
+
+  style_definitions: !include Configs/styleDefinitions.yaml
+  #---[ Idle handling ]--------------------------------------------------------------------------
+  on_idle:
+    timeout: !lambda "return (id(idDisplayTimeout).state * 1000);"
+    then:
+      - logger.log: "LVGL is idle"
+      - light.turn_on:
+          id: idBacklight
+          brightness: 70%
+          transition_length: 500ms
+      # - lvgl.pause:
+      - lambda: |-
+          auto *top = lv_layer_top();
+          lv_obj_add_flag(top, LV_OBJ_FLAG_HIDDEN);    // hide     
+          lvgl_lvglcomponent_id->show_page(idPagePic1->index, LV_SCR_LOAD_ANIM_NONE, 500);          
+          id(idLvglIdleFlag) = 1;     
+
+
+
 # =================================================================================================
 # === Display =====================================================================================
 # Setup the ili9xxx platform
@@ -244,7 +333,9 @@ display:
   - id: idDisplay
     platform: ili9xxx
     model: TFT 2.4R # original used to be LI9341
-    #model: st7789v
+    color_order: RGB
+    invert_colors: false
+    # color_palette: 8BIT
     spi_id: tft
     cs_pin:
       number: 15
@@ -252,8 +343,6 @@ display:
     dc_pin:
       number: 2
       ignore_strapping_warning: true
-    invert_colors: true # original used to be false
-    color_palette: 8BIT # added this line
     update_interval: never
     auto_clear_enabled: false
     transform: # added this line
@@ -281,7 +370,9 @@ touchscreen:
       swap_xy: false #added this line
     on_release:
       - if:
-          condition: lvgl.is_paused
+          # condition: lvgl.is_paused
+          condition: 
+            lambda: 'return id(idLvglIdleFlag);'
           then:
             - logger.log: "LVGL resuming"
             - lvgl.resume:
@@ -289,7 +380,12 @@ touchscreen:
             - light.turn_on:
                 id: idBacklight
                 brightness: 100%
-                transition_length: 500ms
+                transition_length: 500ms                  
+            - lambda: |-
+                auto *top = lv_layer_top();
+                lv_obj_clear_flag(top, LV_OBJ_FLAG_HIDDEN);  // show
+                lvgl_lvglcomponent_id->show_page(idPageKapuGrzs->index, LV_SCR_LOAD_ANIM_NONE, 500);
+                id(idLvglIdleFlag) = 0;
 
   # Uncomment to enable touch logging
   #on_touch:
